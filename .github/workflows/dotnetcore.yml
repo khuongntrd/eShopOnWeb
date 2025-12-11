@@ -29,8 +29,10 @@ jobs:
           path: "**/TestResults/test_results.trx"
           reporter: dotnet-trx
 
-      - name: Copy Coverage To Predictable Location
-        run: cp **/TestResults/*/coverage.cobertura.xml coverage.cobertura.xml
+      - name: Copy Test Report
+        run: |
+          Copy-Item tests/PublicApiIntegrationTests/TestResults/*/coverage.cobertura.xml -Destination coverage.cobertura.xml -Force
+        shell: pwsh
 
       - name: Upload Test Report Artifact
         uses: actions/upload-artifact@v4
