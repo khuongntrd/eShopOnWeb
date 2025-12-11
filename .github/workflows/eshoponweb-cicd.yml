@@ -1,15 +1,15 @@
 name: eShopOnWeb Build and Test
 
 #Triggers (uncomment line below to use it)
-#on: [push, workflow_dispatch]
+on: [workflow_dispatch]
 
 #Environment variables https://docs.github.com/en/actions/learn-github-actions/environment-variables
 env:
-  RESOURCE-GROUP: rg-eshoponweb-NAME
-  LOCATION: westeurope
+  RESOURCE-GROUP: khuong-nguyen-rg
+  LOCATION: southeastasia
   TEMPLATE-FILE: infra/webapp.bicep
-  SUBSCRIPTION-ID: YOUR-SUBS-ID
-  WEBAPP-NAME: eshoponweb-webapp-NAME
+  SUBSCRIPTION-ID: ${{ vars.SUBSCRIPTION_ID }}
+  DOTNET_ROOT: /home/runner/.dotnet
 
 jobs:
   #Build, test and publish .net web project in repository
@@ -52,6 +52,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: buildandtest
+    env:
+      WEBAPP-NAME: ${{ vars.WEB_NAME }}
     environment:
       name: "Development"
     steps:
@@ -76,19 +78,19 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # Deploy Azure WebApp using Bicep file
-      - name: deploy
-        uses: azure/arm-deploy@v2
-        with:
-          subscriptionId: ${{ env.SUBSCRIPTION-ID }}
-          resourceGroupName: ${{ env.RESOURCE-GROUP }}
-          template: bicep-template/webapp.bicep
-          parameters: "webAppName=${{ env.WEBAPP-NAME }} location=${{ env.LOCATION }}"
-          failOnStdErr: false
+      # - name: deploy
+      #   uses: azure/arm-deploy@v2
+      #   with:
+      #     subscriptionId: ${{ env.SUBSCRIPTION-ID }}
+      #     resourceGroupName: ${{ env.RESOURCE-GROUP }}
+      #     scope: ResourceGroup
+      #     template: bicep-template/webapp.bicep
+      #     parameters: "webAppName=${{ env.WEBAPP-NAME }} location=${{ env.LOCATION }}"
+      #     failOnStdErr: false
 
       # Publish website to Azure App Service (WebApp)
       # Step disabled due to issue where the site sometimes can't be found: https://github.com/microsoft/pipelines-appservice-lib/issues/56. Instead deploy using CLI
       - name: Publish Website to WebApp
-        if: false #Disable step due to comment above
         uses: Azure/webapps-deploy@v3
         with:
           type: ZIP
