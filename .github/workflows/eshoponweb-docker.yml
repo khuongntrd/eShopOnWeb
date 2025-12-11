@@ -12,7 +12,7 @@ on: [workflow_dispatch]
 permissions:
   contents: read
   packages: write
-
+  id-token: write
 jobs:
   #Build, test and publish .net web project in repository
   buildandtest:
