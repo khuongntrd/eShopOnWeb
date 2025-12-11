@@ -19,4 +19,45 @@ jobs:
         run: dotnet build ./eShopOnWeb.sln --configuration Release
 
       - name: Test with dotnet
-        run: dotnet test ./eShopOnWeb.sln --configuration Release
+        run: dotnet test ./eShopOnWeb.sln --configuration Release --no-restore --verbosity minimal --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test_results.trx"
+        continue-on-error: true
+
+      - name: Add unit test report
+        uses: dorny/test-reporter@v2.3.0
+        with:
+          name: "Test Results"
+          path: "**/TestResults/test_results.trx"
+          reporter: dotnet-trx
+
+      - name: Upload Test Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: "**/TestResults/*/coverage.cobertura.xml"
+  test:
+    name: Test Summary
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Test Report Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-report
+
+      - name: Generate Test Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.cobertura.xml
+          badge: true
+          format: "md"
+          output: "both"
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: Write to Job Summary
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
