@@ -49,3 +49,5 @@ jobs:
           push: true
           tags: ${{ secrets.ACR_NAME }}.azurecr.io/eshoponweb:latest
           context: .
+          cache-from: type=gha,scope=${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}
