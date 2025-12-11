@@ -29,11 +29,14 @@ jobs:
           path: "**/TestResults/test_results.trx"
           reporter: dotnet-trx
 
+      - name: Copy Coverage To Predictable Location
+        run: cp **/TestResults/*/coverage.cobertura.xml coverage.cobertura.xml
+
       - name: Upload Test Report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-report
-          path: "**/TestResults/*/coverage.cobertura.xml"
+          path: "coverage.cobertura.xml"
   test:
     name: Test Summary
     needs: [build]
