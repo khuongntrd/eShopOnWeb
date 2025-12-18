@@ -48,6 +48,7 @@ jobs:
           resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
           scope: resourcegroup
           template: infra/acr.bicep
+          failOnStdErr: false
       - name: Deploy ACI
         uses: azure/arm-deploy@v2
         with:
@@ -55,5 +56,6 @@ jobs:
           resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
           scope: resourcegroup
           template: infra/aci.bicep
+          failOnStdErr: false
           parameters: |
             acrName=${{ steps.deploy-acr.outputs.acrLoginServer }}
