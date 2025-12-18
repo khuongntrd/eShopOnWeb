@@ -48,7 +48,7 @@ jobs:
           scope: resourcegroup
           template: infra/acr.bicep
           parameters: |
-            acrName='${{ vars.ACR_NAME }}'
+            acrName=${{ vars.ACR_NAME }}
       - name: deploy
         uses: azure/arm-deploy@v2
         with:
@@ -57,4 +57,4 @@ jobs:
           scope: resourcegroup
           template: infra/aci.bicep
           parameters: |
-            acrName='${{ vars.ACR_NAME }}'
+            acrName=${{ vars.ACR_NAME }}
