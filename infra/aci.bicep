@@ -24,9 +24,10 @@ param memoryInGb int = 2
 ])
 param restartPolicy string = 'Always'
 
-param acrName string 
+param server string 
 
 var name = '${prefix}${uniqueString(resourceGroup().id)}'
+var acrName = replace(server, '.azurecr.io', '')
 
 resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: acrName

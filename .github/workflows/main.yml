@@ -58,4 +58,4 @@ jobs:
           template: infra/aci.bicep
           failOnStdErr: false
           parameters: |
-            acrName=${{ steps.deploy-acr.outputs.acrLoginServer }}
+            server=${{ steps.deploy-acr.outputs.acrLoginServer }}
