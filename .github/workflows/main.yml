@@ -1,3 +1,5 @@
+name: CI Workflow
+
 on:
   workflow_dispatch:
   push:
@@ -6,9 +8,47 @@ on:
       - devops
 
 jobs:
-  build:
+  determine-changes:
     runs-on: ubuntu-latest
+    outputs:
+      infra_changed: ${{ steps.filter.outputs.infra }}
+      api_changed: ${{ steps.filter.outputs.api }}
+      web_changed: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: ./.github/actions/filter_action
+        id: filter
 
+  deploy-infra:
+    needs: determine-changes
+    if: needs.determine-changes.outputs.infra_changed == 'true'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: echo "Hello, World!"
+        with:
+          fetch-depth: 0
+      - name: Deploy Infrastructure
+        run: echo "Deploying infrastructure..."
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: deploy
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
+          scope: ResourceGroup
+          template: infra/acr.bicep
+          parameters: |
+            acrName='${{ vars.ACR_NAME }}'
+      - name: deploy
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
+          scope: ResourceGroup
+          template: infra/aci.bicep
+          parameters: |
+            acrName='${{ vars.ACR_NAME }}'

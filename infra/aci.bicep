@@ -24,12 +24,11 @@ param memoryInGb int = 2
 ])
 param restartPolicy string = 'Always'
 
-@secure()
-param password string
+param acrName string 
 
-param username string
-
-param server string
+resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
+  name: acrName
+}
 
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
   name: name
@@ -91,11 +90,19 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
     }
     imageRegistryCredentials: [
       {
-        password: password
-        server: server
-        username: username
+        server: acr.properties.loginServer
       }
     ]
+  }
+}
+
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerGroup.id, 'acrpull')
+  scope: acr
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull role
+    principalId: containerGroup.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 

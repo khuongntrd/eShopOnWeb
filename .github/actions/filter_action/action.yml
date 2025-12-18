@@ -1,0 +1,32 @@
+name: Filter CI Run
+description: |
+  Shared action to determine whether current workflow should run based on branch or file path filters.
+
+outputs:
+  infra_changed:
+    description: "Indicates if infrastructure-related files have changed."
+    value: "${{ steps.filter.outputs.infra }}"
+  api_chhanged:
+    description: "Indicates if API-related files have changed."
+    value: "${{ steps.filter.outputs.api }}"
+  web_changed:
+    description: "Indicates if Web-related files have changed."
+    value: "${{ steps.filter.outputs.web }}"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          infra:
+            - 'infra/**'
+          api:
+            - 'src/PublicApi/**'
+            - 'src/ApplicationCore/**'
+            - 'src/Infrastructure/**'
+          web:
+            - 'src/**'
