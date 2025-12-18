@@ -15,6 +15,9 @@ jobs:
       api_changed: ${{ steps.filter.outputs.api }}
       web_changed: ${{ steps.filter.outputs.web }}
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/filter_action
         id: filter
 
