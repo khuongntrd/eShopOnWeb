@@ -45,7 +45,7 @@ jobs:
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
-          scope: ResourceGroup
+          scope: resourcegroup
           template: infra/acr.bicep
           parameters: |
             acrName='${{ vars.ACR_NAME }}'
@@ -54,7 +54,7 @@ jobs:
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
-          scope: ResourceGroup
+          scope: resourcegroup
           template: infra/aci.bicep
           parameters: |
             acrName='${{ vars.ACR_NAME }}'
