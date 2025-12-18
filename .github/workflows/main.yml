@@ -11,9 +11,9 @@ jobs:
   determine-changes:
     runs-on: ubuntu-latest
     outputs:
-      infra_changed: ${{ steps.filter.outputs.infra }}
-      api_changed: ${{ steps.filter.outputs.api }}
-      web_changed: ${{ steps.filter.outputs.web }}
+      infra_changed: ${{ steps.filter.outputs.infra_changed }}
+      api_changed: ${{ steps.filter.outputs.api_changed }}
+      web_changed: ${{ steps.filter.outputs.web_changed }}
     steps:
       - uses: actions/checkout@v5
         with:
