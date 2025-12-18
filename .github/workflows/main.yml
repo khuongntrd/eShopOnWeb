@@ -54,6 +54,9 @@ jobs:
     needs: [determine-changes, deploy-infra]
     if: needs.determine-changes.outputs.api_changed == 'true' || needs.determine-changes.outputs.web_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
