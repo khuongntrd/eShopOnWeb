@@ -1,5 +1,5 @@
-@description('Name for the container group')
-param name string = 'eshopcontainer'
+@description('Prefix for the container group')
+param prefix string = 'eshopcontainer'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -26,8 +26,15 @@ param restartPolicy string = 'Always'
 
 param acrName string 
 
+var name = '${prefix}${uniqueString(resourceGroup().id)}'
+
 resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: acrName
+}
+
+resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = {
+  name: '${name}-identity'
+  location: location
 }
 
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
@@ -90,6 +97,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
     }
     imageRegistryCredentials: [
       {
+        identity: identity.id
         server: acr.properties.loginServer
       }
     ]
@@ -97,11 +105,11 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
 }
 
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(containerGroup.id, 'acrpull')
+  name: guid(identity.id, 'acrpull')
   scope: acr
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull role
-    principalId: containerGroup.identity.principalId
+    principalId: identity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }
