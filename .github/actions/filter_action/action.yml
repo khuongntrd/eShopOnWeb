@@ -23,10 +23,13 @@ runs:
       with:
         filters: |
           infra:
+            - .github/**
             - 'infra/**'
           api:
+            - .github/**
             - 'src/PublicApi/**'
             - 'src/ApplicationCore/**'
             - 'src/Infrastructure/**'
           web:
+            - .github/**
             - 'src/**'

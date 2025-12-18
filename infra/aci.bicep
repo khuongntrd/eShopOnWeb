@@ -38,7 +38,7 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' 
   location: location
 }
 
-resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
+resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2025-09-01' = {
   name: name
   location: location
   identity: {
@@ -90,6 +90,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
     osType: 'Linux'
     restartPolicy: restartPolicy
     ipAddress: {
+      dnsNameLabel: toLower(name)
       type: 'Public'
       ports: [
         {
