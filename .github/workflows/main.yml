@@ -25,6 +25,9 @@ jobs:
     needs: determine-changes
     if: needs.determine-changes.outputs.infra_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
         with:
