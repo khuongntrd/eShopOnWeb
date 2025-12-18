@@ -49,19 +49,9 @@ jobs:
           scope: resourcegroup
           template: infra/acr.bicep
           failOnStdErr: false
-      - name: Deploy ACI
-        uses: azure/arm-deploy@v2
-        with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ secrets.RESOURCE_GROUP }}
-          scope: resourcegroup
-          template: infra/aci.bicep
-          failOnStdErr: false
-          parameters: |
-            server=${{ steps.deploy-acr.outputs.acrLoginServer }}
 
   build-images:
-    needs: determine-changes
+    needs: [determine-changes, deploy-infra]
     if: needs.determine-changes.outputs.api_changed == 'true' || needs.determine-changes.outputs.web_changed == 'true'
     runs-on: ubuntu-latest
     steps:
